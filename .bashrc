@@ -1,4 +1,16 @@
+#
+# ~/.bashrc
+#
+
 # /etc/bash/bashrc
+#
+# This file is based on gentoo-bashrc and need the following packages
+# installed in the system:
+#
+# - git
+# - bash-completion
+# - python-virtualenvwrapper
+# - command-not-found
 #
 # This file is sourced by all *interactive* bash shells on startup,
 # including some apparently interactive shells such as scp and rcp
@@ -49,6 +61,16 @@ match_lhs=""
 	&& match_lhs=$(dircolors --print-database)
 [[ $'\n'${match_lhs} == *$'\n'"TERM "${safe_term}* ]] && use_color=true
 
+__ps1_width ()
+{
+   if [[ ${COLUMNS} -gt 80 ]] ; then
+           PS1="\[\033[01;32m\]\u@\h\[\033[01;34m\] \w\[\033[01;31m\]\$(__git_ps1) \[\033[01;34m\]\$\[\033[00m\] "
+   else
+           PS1="\[\033[01;32m\]\u@\h\[\033[01;34m\] \W\[\033[01;31m\]\$(__git_ps1) \[\033[01;34m\]\$\[\033[00m\] "
+   fi
+}
+
+
 if ${use_color} ; then
 	# Enable colors for ls, etc.  Prefer ~/.dir_colors #64489
 	if type -P dircolors >/dev/null ; then
@@ -62,7 +84,12 @@ if ${use_color} ; then
 	if [[ ${EUID} == 0 ]] ; then
 		PS1='\[\033[01;31m\]\h\[\033[01;34m\] \W \$\[\033[00m\] '
 	else
-        PS1="\[\033[01;32m\]\u@\h\[\033[01;34m\] \W\[\033[01;31m\]\$(__git_ps1 ' %s') \[\033[01;34m\]\$\[\033[00m\] "
+		   if [[ ${COLUMNS} -gt 80 ]] ; then
+			   PS1="\[\033[01;32m\]\u@\h\[\033[01;34m\] \w\[\033[01;31m\]\$(__git_ps1) \[\033[01;34m\]\$\[\033[00m\] "
+		   else
+			   PS1="\[\033[01;32m\]\u@\h\[\033[01;34m\] \W\[\033[01;31m\]\$(__git_ps1) \[\033[01;34m\]\$\[\033[00m\] "
+		   fi
+
 	fi
 
 	alias ls='ls --color=auto'
@@ -70,22 +97,25 @@ if ${use_color} ; then
 else
 	if [[ ${EUID} == 0 ]] ; then
 		# show root@ when we don't have colors
-		PS1='\u@\h \w \$ '
+		PS1='\u@\h \W \$ '
 	else
-        PS1="\u@\h \w \$(__git_ps1 "%s") \$ "
+		PS1="\u@\h \w \$(__git_ps1) \$ "
 	fi
 fi
 
+
 # Try to keep environment pollution down, EPA loves us.
 unset use_color safe_term match_lhs
-
-PATH=$PATH:$HOME/.gem/ruby/2.0.0/bin
-source /etc/profile.d/cnf.sh
 source /usr/bin/virtualenvwrapper.sh
 source /usr/share/git/completion/git-completion.bash
-source /usr/share/git/completion/git-prompt.sh
+source /usr/share/git/git-prompt.sh 
 source /usr/share/bash-completion/bash_completion
 
-export EDITOR=vim
+# Vim is my favourite editor
+export EDITOR=/usr/bin/vim
+
+# I only want to see the full path when the terminal window
+# had a size > 80 columns
+trap '__ps1_width' SIGWINCH
 
 alias act='yaourt -Suy --aur'
