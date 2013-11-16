@@ -1,10 +1,9 @@
 #
 # ~/.bashrc
 #
-
-# /etc/bash/bashrc
+# This file have been written to work on an Archlinux Box
 #
-# This file is based on gentoo-bashrc and need the following packages
+# Also, this file is based on gentoo-bashrc and need the following packages
 # installed in the system:
 #
 # - git
