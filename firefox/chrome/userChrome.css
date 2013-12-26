@@ -1,0 +1,5 @@
+/* Snippet to only show icons in the personal bookmark bar */
+
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"); /* only needed once */
+
+#personal-bookmarks .bookmark-item > .toolbarbutton-text { display:none !important; }
