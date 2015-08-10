@@ -38,7 +38,7 @@ endif
 if has('vim_starting')
     set rtp+=$HOME/.vim/bundle/neobundle.vim/
 endif
-call neobundle#rc(expand($HOME.'/.vim/bundle/'))
+call neobundle#begin(expand($HOME.'/.vim/bundle/'))
 
 " is better if NeoBundle rules NeoBundle (needed!)
 NeoBundle 'Shougo/neobundle.vim'
@@ -86,8 +86,10 @@ NeoBundleLazy 'Shougo/junkfile.vim', {'autoload':{'commands':'JunkfileOpen',
             \ 'unite_sources':['junkfile','junkfile/new']}}
 
 " Unite plugin that provides command line completition
-NeoBundle 'majkinetor/unite-cmdmatch'
+NeoBundle 'joedicastro/unite-cmdmatch'
 
+" Unite plugin that provides spell suggestions
+NeoBundle 'kopischke/unite-spell-suggest'
 " }}}
 
 " Colorschemes {{{
@@ -290,13 +292,16 @@ NeoBundleLazy 'joedicastro/dbext.vim', { 'autoload' : { 'filetypes' : 'sql'}}
 
 " END BUNDLES }}}
 
-" Auto install the plugins {{{
+call neobundle#end()
+
+" Auto install the Plugins {{{
 
 " First-time plugins installation
 if iCanHazNeoBundle == 0
     echo "Installing Bundles, please ignore key map error messages"
     echo ""
-    :NeoBundleInstall
+    set nomore
+    NeoBundleInstall
 endif
 
 " Check if all of the plugins are already installed, in other case ask if we
@@ -342,6 +347,7 @@ set autoread                    " update a open file edited outside of Vim
 set ttimeoutlen=0               " toggle between modes almost instantly
 set backspace=indent,eol,start  " defines the backspace key behavior
 set virtualedit=all             " to edit where there is no actual character
+set more                        " to show pages using `more` in command outpouts
 
 " }}}
 
@@ -571,9 +577,11 @@ nmap <Leader>so :setlocal nospell <CR>
 " jump to the next bad spell word
 nmap <Leader>sn ]s
 " suggest words
-nmap <Leader>sp z=
+" nmap <Leader>sp z=
+nmap <Leader>sp :Unite spell_suggest<CR>
 " jump to the next bad spell word and suggests a correct one
-nmap <Leader>sc ]sz=
+" nmap <Leader>sc ]sz=
+nmap <Leader>sc ]s :Unite spell_suggest<CR>
 " add word to the dictionary
 nmap <Leader>sa zg
 " }}}
@@ -745,9 +753,9 @@ nnoremap Y y$
 set noshowmode
 
 let g:airline_theme='powerlineish'
-let g:airline_enable_branch=1
 let g:airline_powerline_fonts=1
-let g:airline_detect_whitespace = 1
+let g:airline#extensions#branch#enabled = 1
+let g:airline#extensions#whitespace#enabled = 1
 let g:airline#extensions#hunks#non_zero_only = 1
 
 " let g:airline#extensions#tabline#enabled = 2
@@ -1713,15 +1721,21 @@ call unite#filters#sorter_default#use(['sorter_rank'])
 call unite#custom#source('file_mru,file_rec,file_rec/async,grep,locate',
             \ 'ignore_pattern', join(['\.git/', 'tmp/', 'bundle/'], '\|'))
 
+let g:default_context = {
+    \ 'winheight' : 15,
+    \ 'update_time' : 200,
+    \ 'prompt' : '>>> ',
+    \ 'enable_start_insert' : 0,
+    \ 'enable_short_source_names' : 0,
+    \ 'marked_icon' : '✓',
+    \ 'ignorecase' : 1,
+    \ 'smartcase' : 1,
+\ }
+
+call unite#custom#profile('default', 'context', default_context)
+
 let g:unite_source_history_yank_enable = 1
-let g:unite_enable_start_insert = 0
-let g:unite_enable_short_source_mes = 0
 let g:unite_force_overwrite_statusline = 0
-let g:unite_prompt = '>>> '
-let g:unite_marked_icon = '✓'
-" let g:unite_candidate_icon = '∘'
-let g:unite_winheight = 15
-let g:unite_update_time = 200
 let g:unite_split_rule = 'botright'
 let g:unite_data_directory = $HOME.'/.vim/tmp/unite'
 let g:unite_source_buffer_time_format = '(%d-%m-%Y %H:%M:%S) '
